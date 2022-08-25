@@ -1,0 +1,67 @@
+#Fernanda Santos and Elizabeth Herndon, 2022
+
+
+setwd("C:/Users/nanda/Documents/Postdoc_2020/ORNL_Mnprojects/NEONdata/Manuscript_NEON/Code_GlobalBiogeochemicalCycles")
+
+#Partial correlation analysis
+
+library(ppcor)
+
+pc = read.csv("neon_pcmatrix.csv", header=TRUE)
+
+#Focus on C stocks and Mn
+pcor.test(pc$cstock, pc$mnMjelm, list(pc$cstock, pc$mnMjelm),method = "spearman")
+pcor.test(pc$cstock, pc$mnMjelm, pc$phCacl2,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$temp,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$precip,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$caNh4d,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$baseSumCecd10,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$bsesatCecd10,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$sulf,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$alMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$caMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$feMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$kMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$mgMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$naMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$pMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$siMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$srMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$cstock, pc$tiMjelm,method = "spearman")
+pcor.test(pc$mnMjelm, pc$cstock, pc$zrMjelm,method = "spearman")
+pcor.test(pc$mnMjelm, pc$cstock, pc$phH2o,method = "spearman")
+pcor.test(pc$mnMjelm, pc$cstock, pc$ec12pre,method = "spearman")#error due to one missing data
+pcor.test(pc$mnMjelm, pc$cstock, pc$mnKcl,method = "spearman")# error due to missing data
+pcor.test(pc$mnMjelm, pc$cstock, pc$kNh4d,method = "spearman")
+pcor.test(pc$mnMjelm, pc$cstock, pc$mgNh4d,method = "spearman")
+pcor.test(pc$mnMjelm, pc$cstock, pc$cecdNh4,method = "spearman")
+
+
+#Focus on N stocks and Mn
+pcor.test(pc$nstock, pc$mnMjelm, list(pc$nstock, pc$mnMjelm),method = "spearman")
+pcor.test(pc$nstock, pc$mnMjelm, pc$phCacl2,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$temp,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$precip,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$caNh4d,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$baseSumCecd10,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$bsesatCecd10,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$sulf,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$alMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$caMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$feMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$kMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$mgMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$naMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$pMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$siMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$srMjelm,method = "spearman") 
+pcor.test(pc$mnMjelm, pc$nstock, pc$tiMjelm,method = "spearman")
+pcor.test(pc$mnMjelm, pc$nstock, pc$zrMjelm,method = "spearman")
+pcor.test(pc$mnMjelm, pc$nstock, pc$phH2o,method = "spearman")
+pcor.test(pc$mnMjelm, pc$nstock, pc$ec12pre,method = "spearman")#error due to one missing data
+pcor.test(pc$mnMjelm, pc$nstock, pc$mnKcl,method = "spearman")# error due to missing data
+pcor.test(pc$mnMjelm, pc$nstock, pc$kNh4d,method = "spearman")
+pcor.test(pc$mnMjelm, pc$nstock, pc$mgNh4d,method = "spearman")
+pcor.test(pc$mnMjelm, pc$nstock, pc$cecdNh4,method = "spearman")
+
+

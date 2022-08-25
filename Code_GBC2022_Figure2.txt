@@ -1,0 +1,219 @@
+#Fernanda Santos and Elizabeth Herndon, 2022
+
+setwd("C:/Users/nanda/Documents/Postdoc_2020/ORNL_Mnprojects/NEONdata/Manuscript_NEON/Code_GlobalBiogeochemicalCycles")
+#Remove the # if you need to install the packages below
+#install.packages("ggplot2")
+#install.packages("easyGgplot2")
+#install.packages("ggthemes")
+#install.packages("scales")
+#install.packages("Rmisc")
+#install.packages("RColorBrewer")
+#install.packages("gridExtra")
+#install.packages("readr")
+#install.packages("stats")
+#install.packages("minpack.lm")
+#install.packages("ggpubr")
+#install.packages("ppcor") 
+#install.packages("ggsci") 
+
+#open libraries
+library(ggplot2)
+library(easyGgplot2)
+library(ggthemes)
+library(scales)
+library(Rmisc)
+library(RColorBrewer)
+library(gridExtra)
+library(readr)
+library(stats)
+library(minpack.lm)
+library(ggsci) # uses jco palette
+
+#FIGURE 2
+corr = read.csv("allsites_ind.csv", header=TRUE)
+
+
+model1 <- nls(cstock ~ SSasymp (mnMjelm, yf, y0, log_alpha), data = corr)
+model2 <- nls(nstock ~ SSasymp (mnMjelm, yf, y0, log_alpha), data = corr)
+
+#Add predicted data to the dataset 
+
+predlma = predict(model1, interval="confidence")
+predlmb = predict(model2, interval="confidence")
+
+#Figure 2a
+plot1_hor <- ggplot(corr, aes(x= mnMjelm, y= cstock)) + ggtitle ("(a)") + geom_point(data=corr, aes (fill=horizonName),size=5, pch=21) + labs(y=(expression(paste("C stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(-0.5,20) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=14), axis.title.y = element_text(colour="black", face="bold", size=14), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predlma), size=1, linetype = "dashed", color = "black")  + scale_fill_brewer (palette = "Greys", name= "Soil horizons", breaks=c("Oi","Oe","Oa"), labels=c("Oi","Oe","Oa"))
+
+#Figure 2c
+plot2_hor <- ggplot(corr, aes(x= mnMjelm, y= nstock)) + ggtitle ("(c)") + geom_point(data=corr, aes (fill=horizonName),size=5, pch=21) + labs(y=(expression(paste("N stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(-0.1,1.5) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=14), axis.title.y = element_text(colour="black", face="bold", size=14), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predlmb), size=1, linetype = "dashed", color = "black")  + scale_fill_brewer (palette = "Blues", name= "Soil horizons", breaks=c("Oi","Oe","Oa"), labels=c("Oi","Oe","Oa"))
+
+
+#Figure 2b
+corr3 <- ggplot(corr, aes(y=oneovercstock, x=mnMjelm)) + geom_point(size=2, shape=19, color ="black", fill ="black") + labs(y=(expression(paste("1/C stock"))), x=(expression(paste("Manganese concentration (mg Mn kg"^"  -1",")")))) + theme_bw() + ylim(0,3) + xlim(0,2500) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=16), axis.title.y = element_text(colour="black", face="bold", size=16), axis.text = element_text(colour="black", size=16))
+#Fit regression line
+require(stats)
+reg2 <- lm (oneovercstock ~ mnMjelm, data = corr)
+reg2
+coeff=coefficients(reg2)
+rsquared=summary(reg2)$r.squared
+# Equation of the line : 
+#Change the second number after coeff to change the number 
+#of decimals of the slope and intercept values
+eq = paste0("(b)  y = ", round(coeff[2],2), "*x + ", round(coeff[1],2), ",", " ","R squared = ", round(rsquared,3)) 
+# Plot and fit model to data and add line type, color and size
+corr4 <- corr3 + stat_smooth(method="lm", se=FALSE, color="black", linetype="dashed", size=1.5) + geom_point(aes(fill=horizonName), pch=21, size= 5) + scale_fill_brewer (palette = "Greys", name= "Soil horizons", breaks=c("Oi","Oe","Oa"), labels=c("Oi","Oe","Oa")) + ggtitle(eq) + stat_cor(p.accuracy = 0.001, label.x = 3)
+
+#Figure 2d
+corrn <- ggplot(corr, aes(y=oneovernstock, x=mnMjelm)) + geom_point(size=2, shape=19, color ="black", fill ="black") + labs(y=(expression(paste("1/N stock"))), x=(expression(paste("Manganese concentration (mg Mn kg"^"  -1",")")))) + theme_bw() + ylim(0,90) + xlim(0,2500) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=16), axis.title.y = element_text(colour="black", face="bold", size=16), axis.text = element_text(colour="black", size=16))
+corrn
+#Fit regression line
+#First variable after lm is your y variable and the second variable is your x variable
+require(stats)
+reg2a <- lm (oneovernstock ~ mnMjelm, data = corr)
+reg2a
+coeff=coefficients(reg2a)
+rsquared=summary(reg2a)$r.squared
+# Equation of the line : 
+#Change the second number after coeff to change the number 
+#of decimals of the slope and intercept values
+eq = paste0("(d)  y = ", round(coeff[2],2), "*x + ", round(coeff[1],2), ",", " ","R squared = ", round(rsquared,3)) 
+# Plot and fit model to data and add line type, color and size
+corrN <- corrn + stat_smooth(method="lm", se=FALSE, color="black", linetype="dashed", size=1.5) + geom_point(aes(fill=horizonName), pch=21, size= 5) + scale_fill_brewer (palette = "Blues", name= "Soil horizons", breaks=c("Oi","Oe","Oa"), labels=c("Oi","Oe","Oa")) + ggtitle(eq) + stat_cor(p.accuracy = 0.001, label.x = 3)
+
+
+#Figure 2
+#now they do not have a common.legend
+ggarrange(plot1_hor, plot2_hor, corr4, corrN, nrow=2, ncol=2)
+
+
+
+
+
+#FIGURE S1 A AND B #NEED to run the correlations and models in figure 1 first
+#Modify the plot so that each data point is associated with a NEON site. Sites will be in the legend
+#Read data again in case you have made changes to the variable names or added or deleted a column
+setwd("C:/Users/nanda/Documents/Postdoc_2020/ORNL_Mnprojects/NEONdata")
+cor = read.csv("allsites_ave.csv", header=TRUE)
+
+#Set the colors so that there are 16 different colors instead of 8
+mycolors = c(colorRampPalette(brewer.pal(name="Dark2", n = 8))(16))
+
+plot1_sites <- ggplot(cor, aes(x= Mn, y= C_stock)) + ggtitle("(a)") + geom_point(data=cor, aes (color=site), size=4, shape=19) + labs(y=(expression(paste("C stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,20) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=16), axis.title.y = element_text(colour="black", face="bold", size=14), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predlmC), size=1, linetype = "dashed", color = "black")   + scale_color_manual(name= "NEON sites", values = mycolors)
+plot1_sites
+
+
+#Modify the plot so that each data point is associated with a NEON site. Sites will be in the legend
+#Read data again in case you have made changes to the variable names or added or deleted a column
+cor = read.csv("allsites_ave.csv", header=TRUE)
+
+#Do the same for Nitrogen stocks
+
+# in this case N_stock is in the y axis
+modelb <- nls(N_stock ~ SSasymp (Mn, yf, y0, log_alpha), data = cor)
+modelb
+
+#Add predicted data to the dataset 
+predN = predict(modelb, interval="confidence")
+
+plot2_sites <- ggplot(cor, aes(x= Mn, y= N_stock)) + ggtitle("(b)") + geom_point(data=cor, aes (color=site), size=4, shape=19) + labs(y=(expression(paste("N stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,1.1) + theme(legend.position = "none", legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=14), axis.title.y = element_text(colour="black", face="bold", size=16), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predN), size=1, linetype = "dashed", color = "black") + scale_color_manual(name= "NEON sites", values = mycolors)
+plot2_sites
+
+# par sets the bottom, left, top and right margins respectively of the plot region in number of lines of text
+
+ggarrange(plot1_sites, plot2_sites, nrow=2, common.legend = TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#correlation matrix among all variables (averaged)
+# it is important to note that if error is regarding x must be numeric then first column is site
+# remove the first column on sites although this column is useful to make figure 1
+
+#Pearson correlation
+library("ggpubr")
+library("PerformanceAnalytics")
+library("Hmisc")
+library(reshape2)
+
+setwd("C:/Users/nanda/Documents/Postdoc_2020/ORNL_Mnprojects/NEONdata")
+
+#SPEARMAN
+corrave = read.csv("allsites_ave.csv", header=TRUE)
+c2 <- cor(corrave, use="pairwise.complete.obs", method=c("spearman"))
+head(c2)
+
+library(reshape2)
+melted_c2 <- melt(c2) 
+head(melted_c2)
+
+ggplot(data = melted_c2, aes(x=Var1, y=Var2, fill=value)) + geom_raster()
+
+# Get lower triangle of the correlation matrix
+  get_lower_tri<-function(c2){
+    c2[upper.tri(c2)] <- NA
+    return(c2)
+  }
+  # Get upper triangle of the correlation matrix
+  get_upper_tri <- function(c2){
+    c2[lower.tri(c2)]<- NA
+    return(c2)
+  }
+
+upper_tri <- get_upper_tri(c2)
+upper_tri
+
+
+reorder_c2 <- function(c2){
+# Use correlation between variables as distance
+dd <- as.dist((1-c2)/2)
+hc <- hclust(dd)
+c2 <-c2[hc$order, hc$order]
+}
+
+# Reorder the correlation matrix
+c2 <- reorder_c2(c2)
+upper_tri <- get_upper_tri(c2)
+# Melt the correlation matrix
+melted_c2 <- melt(upper_tri, na.rm = TRUE)
+# Create a ggheatmap
+ggheatmap <- ggplot(melted_c2, aes(Var2, Var1, fill=value))+
+ geom_tile(color = "white")+ 
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+    name="Spearman\nCorrelation") +
+  theme_minimal()+ # minimal theme
+ theme(axis.text.x = element_text(angle = 90, vjust = 1, 
+    size = 9, hjust = 1), axis.title.x = element_blank(),
+  axis.title.y = element_blank(),legend.justification = c(1, 0),
+  legend.position = c(0.6, 0.7),  legend.direction = "horizontal")+
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                title.position = "top", title.hjust = 0.5))+
+ coord_fixed()
+# Print the heatmap
+print(ggheatmap)
+
+https://www.cedricscherer.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/
+

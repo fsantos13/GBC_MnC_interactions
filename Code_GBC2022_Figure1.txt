@@ -1,0 +1,80 @@
+#Fernanda Santos and Elizabeth Herndon, 2022
+
+setwd("C:/Users/nanda/Documents/Postdoc_2020/ORNL_Mnprojects/NEONdata")
+#Remove the # if you need to install the packages below
+#install.packages("ggplot2")
+#install.packages("easyGgplot2")
+#install.packages("ggthemes")
+#install.packages("scales")
+#install.packages("Rmisc")
+#install.packages("RColorBrewer")
+#install.packages("gridExtra")
+#install.packages("readr")
+#install.packages("stats")
+#install.packages("minpack.lm")
+#install.packages("ggpubr")
+#install.packages("ppcor") 
+
+# open libraries that are useful for analysis and plotting the results
+library(ggplot2)
+library(easyGgplot2)
+library(ggthemes)
+library(scales)
+library(Rmisc)
+library(RColorBrewer) 
+library(gridExtra)
+library(readr)
+library(stats)
+library(minpack.lm)
+library(ggpubr) 
+library(ppcor)
+
+
+#Figure 1 Non-linear regression and violin plots
+
+#Read data
+cor = read.csv("allsites_ave.csv", header=TRUE)
+
+#Crate a non linear model between variables
+modela <- nls(C_stock ~ SSasymp (Mn, yf, y0, log_alpha), data = cor) # carbon
+modelb <- nls(N_stock ~ SSasymp (Mn, yf, y0, log_alpha), data = cor) # nitrogen
+
+#Add predicted data to the dataset 
+predlmC = predict(modela, interval="confidence")
+predlmN = predict(modelb, interval="confidence")
+
+#Plot observation and model data
+#Figure 1a
+plot1 <- ggplot(cor, aes(x= Mn, y= C_stock)) + ggtitle ("(a)") +
+geom_point(size=4, pch=21, fill="grey") + labs(y=(expression(paste("Carbon stock (kg C m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^"  -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,20) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=16), axis.title.y = element_text(colour="black", face="bold", size=14), axis.text = element_text(colour="black", size=16)) + geom_line(aes(y=predlmC), size=1, linetype = "dashed", color = "black")
+
+#Figure 1c
+plot2 <- ggplot(cor, aes(x= Mn, y= N_stock)) + ggtitle ("(c)") + geom_point(size=4, pch=21, fill ="lightblue") + labs(y=(expression(paste("Nitrogen stock (kg N m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^"  -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,1.1) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=16), axis.title.y = element_text(colour="black", face="bold", size=14), axis.text = element_text(colour="black", size=16)) + geom_line(aes(y=predlmN), size=1, linetype = "dashed", color = "black")
+
+ggarrange(plot1, plot2, nrow=2) 
+
+
+factor(cor$C_stock)
+factor(cor$N_stock)
+
+#Figure 1b
+cbox <- ggplot(cor, aes(y= horizon, x=C_stock)) + ggtitle ("(b)") + geom_violin(trim=FALSE) + labs(x=(expression(paste("Carbon stock (kg C m"^"-2",")")))) + theme_bw() + theme(panel.grid.major.x = element_blank(),legend.position="none", axis.title.y= element_blank(), axis.ticks.y=element_blank(), axis.text.y = element_blank(), axis.text.x=element_text(colour="black", face="bold", size=16), axis.title.x=element_text(colour="black", face="bold", size=16), axis.ticks.x=element_line(colour="black")) 
+cbox1 <- cbox + geom_boxplot(outlier.shape = 3)
+cbox1 + geom_point(position = position_jitter(width = 0.2)) 
+cbox2 <- cbox1 + geom_boxplot(outlier.colour = NA) 
+cbox3 <- cbox2 + geom_point(size=4, pch=21, fill ="grey", position = position_jitter(width = 0.2))
+
+
+#Figure 1d
+nbox <- ggplot(cor, aes(y= horizon, x=N_stock)) + ggtitle ("(d)") + geom_violin(trim=FALSE) + labs(x=(expression(paste("Nitrogen stock (kg N m"^"-2",")")))) + theme_bw() + theme(panel.grid.major.x = element_blank(),legend.position="none", axis.title.y= element_blank(), axis.ticks.y=element_blank(), axis.text.y = element_blank(), axis.text.x=element_text(colour="black", face="bold", size=16), axis.title.x=element_text(colour="black", face="bold", size=16), axis.ticks.x=element_line(colour="black"))  
+nbox1 <- nbox + geom_boxplot(outlier.shape = 3)
+nbox1 + geom_point(position = position_jitter(width = 0.2)) 
+nbox2 <- nbox1 + geom_boxplot(outlier.colour = NA) 
+nbox3 <- nbox2 + geom_point(size=4, pch=21, fill ="lightblue", position = position_jitter(width = 0.2))
+
+
+ggarrange(plot1, plot2, cbox3, nbox3, nrow=2, ncol=2) # simple plots of average C and N stocks
+
+
+
+
