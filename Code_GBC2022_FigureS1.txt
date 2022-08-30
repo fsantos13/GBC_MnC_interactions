@@ -12,7 +12,7 @@ mycolors = c(colorRampPalette(brewer.pal(name="Dark2", n = 8))(16))
 plot1_sites <- ggplot(cor, aes(x= Mn, y= C_stock)) + ggtitle("(a)") + geom_point(data=cor, aes (color=site), size=4, shape=19) + labs(y=(expression(paste("C stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,20) + theme(legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=16), axis.title.y = element_text(colour="black", face="bold", size=14), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predlmC), size=1, linetype = "dashed", color = "black")   + scale_color_manual(name= "NEON sites", values = mycolors)
 
 
-plot2_sites <- ggplot(cor, aes(x= Mn, y= N_stock)) + ggtitle("(b)") + geom_point(data=cor, aes (color=site), size=4, shape=19) + labs(y=(expression(paste("N stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,1.1) + theme(legend.position = "none", legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=14), axis.title.y = element_text(colour="black", face="bold", size=16), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predN), size=1, linetype = "dashed", color = "black") + scale_color_manual(name= "NEON sites", values = mycolors)
+plot2_sites <- ggplot(cor, aes(x= Mn, y= N_stock)) + ggtitle("(b)") + geom_point(data=cor, aes (color=site), size=4, shape=19) + labs(y=(expression(paste("N stock (kg m"^"-2",")"))), x=(expression(paste("Manganese concentration (mg Mn kg"^" -1",")")))) + theme_bw() + xlim(0,2500) + ylim(0,1.1) + theme(legend.position = "none", legend.text=element_text(size=14), axis.title.x=element_text(colour="black", face="bold", size=14), axis.title.y = element_text(colour="black", face="bold", size=16), axis.text = element_text(colour="black", size=14)) + geom_line(aes(y=predlmN), size=1, linetype = "dashed", color = "black") + scale_color_manual(name= "NEON sites", values = mycolors)
 
 
 #Figure S1
@@ -40,77 +40,4 @@ ggarrange(plot1_sites, plot2_sites, nrow=2, common.legend = TRUE)
 
 
 
-
-
-
-
-
-#correlation matrix among all variables (averaged)
-# it is important to note that if error is regarding x must be numeric then first column is site
-# remove the first column on sites although this column is useful to make figure 1
-
-#Pearson correlation
-library("ggpubr")
-library("PerformanceAnalytics")
-library("Hmisc")
-library(reshape2)
-
-setwd("C:/Users/nanda/Documents/Postdoc_2020/ORNL_Mnprojects/NEONdata")
-
-#SPEARMAN
-corrave = read.csv("allsites_ave.csv", header=TRUE)
-c2 <- cor(corrave, use="pairwise.complete.obs", method=c("spearman"))
-head(c2)
-
-library(reshape2)
-melted_c2 <- melt(c2) 
-head(melted_c2)
-
-ggplot(data = melted_c2, aes(x=Var1, y=Var2, fill=value)) + geom_raster()
-
-# Get lower triangle of the correlation matrix
-  get_lower_tri<-function(c2){
-    c2[upper.tri(c2)] <- NA
-    return(c2)
-  }
-  # Get upper triangle of the correlation matrix
-  get_upper_tri <- function(c2){
-    c2[lower.tri(c2)]<- NA
-    return(c2)
-  }
-
-upper_tri <- get_upper_tri(c2)
-upper_tri
-
-
-reorder_c2 <- function(c2){
-# Use correlation between variables as distance
-dd <- as.dist((1-c2)/2)
-hc <- hclust(dd)
-c2 <-c2[hc$order, hc$order]
-}
-
-# Reorder the correlation matrix
-c2 <- reorder_c2(c2)
-upper_tri <- get_upper_tri(c2)
-# Melt the correlation matrix
-melted_c2 <- melt(upper_tri, na.rm = TRUE)
-# Create a ggheatmap
-ggheatmap <- ggplot(melted_c2, aes(Var2, Var1, fill=value))+
- geom_tile(color = "white")+ 
- scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-   midpoint = 0, limit = c(-1,1), space = "Lab", 
-    name="Spearman\nCorrelation") +
-  theme_minimal()+ # minimal theme
- theme(axis.text.x = element_text(angle = 90, vjust = 1, 
-    size = 9, hjust = 1), axis.title.x = element_blank(),
-  axis.title.y = element_blank(),legend.justification = c(1, 0),
-  legend.position = c(0.6, 0.7),  legend.direction = "horizontal")+
-  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
-                title.position = "top", title.hjust = 0.5))+
- coord_fixed()
-# Print the heatmap
-print(ggheatmap)
-
-https://www.cedricscherer.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/
 
